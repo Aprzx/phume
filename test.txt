@@ -1,0 +1,81 @@
+<?php
+require_once 'specific_conn.php';
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Management</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .user-data img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+        }
+    </style>
+    <script>
+        function fetchUsers() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'fetch_specific_users.php', true);
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    const users = JSON.parse(this.responseText);
+                    console.log(users); // Log the data to the console
+                    const userTable = document.getElementById('userTableBody');
+                    userTable.innerHTML = '';
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><img src="${user.image_url}" alt="${user.name}"></td>
+                            <td>${user.name}</td>
+                            <td>${user.quantity}</td>
+                            <td>${user.timestamp}</td>
+                        `;
+                        userTable.appendChild(row);
+                    });
+                } else {
+                    console.error('Failed to fetch user data');
+                }
+            };
+            xhr.onerror = function() {
+                console.error('Request error');
+            };
+            xhr.send();
+        }
+
+        // Fetch users every 5 seconds
+        setInterval(fetchUsers, 5000);
+
+        // Fetch users immediately on page load
+        window.onload = fetchUsers;
+    </script>
+</head>
+<body>
+    <h1>User Management</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Quantity</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="userTableBody">
+            <!-- User data will be populated here by JavaScript -->
+        </tbody>
+    </table>
+</body>
+</html>
