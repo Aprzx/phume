@@ -1,0 +1,12 @@
+#alert-container {
+    background-color: #ab353f;
+    color: #721c24;
+    padding: 20px;
+    margin: 20px;
+    border: 1px solid #791e27;
+    border-radius: 5px;
+    display: none;
+}
+#alert-container p {
+    display: block;
+}

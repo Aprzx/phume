@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>User Management</title>
     <style>
@@ -28,7 +29,8 @@
             border-collapse: collapse;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid black;
             padding: 8px;
             text-align: left;
@@ -77,7 +79,44 @@
             xhr.send();
         }
 
+        function exportLogs() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', 'fetch_log.php', true);
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    const logs = JSON.parse(this.responseText);
+                    let logContent = '';
+                    logs.forEach(log => {
+                        logContent += `${log.action}\t${log.item_name}\t${log.timestamp}\n`;
+                    });
+                    const blob = new Blob([logContent], {
+                        type: 'text/plain'
+                    });
+                    const a = document.createElement('a');
+                    a.href = URL.createObjectURL(blob);
+                    a.download = 'logs.txt';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            };
+            xhr.send();
+        }
 
+        function clearLogs() {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', 'clear_log.php', true);
+            xhr.onload = function() {
+                if (this.status === 200) {
+                    console.log(this.responseText); // Add a console log to see the response
+                    fetchLogEntries();
+                }
+            };
+            xhr.send();
+        }
+
+
+        //++++++++++++++++++++++++++||
         // Fetch users every 0.5 seconds
         setInterval(fetchUsers, 500);
 
@@ -91,6 +130,7 @@
         };
     </script>
 </head>
+
 <body>
     <h1>User Management</h1>
     <ul id="userList">
@@ -111,5 +151,8 @@
             <!-- Log entries will be populated here by JavaScript -->
         </tbody>
     </table>
+    <button onclick="exportLogs()">Export Logs</button>
+    <button onclick="clearLogs()">Clear Logs</button>
 </body>
+
 </html>
